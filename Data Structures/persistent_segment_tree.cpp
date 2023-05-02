@@ -1,8 +1,9 @@
 template <typename T>
 struct PersistentSegmentTree{
-    int size = 0;
+    int n = 0;
     vector<T> tree;
-    vector<int> lc, rc, root;
+    vector<int> lc, rc;
+    int root;
 
     T neutral_element; // e.g. 0 for sum, INF for min
 
@@ -40,14 +41,13 @@ struct PersistentSegmentTree{
         lc.resize(n * 25, -1);
         rc.resize(n * 25, -1);
 
-        root.push_back(0);
-        root[0] = build(0, n - 1);
+        root = build(0, n - 1);
     }
 
     inline int update(int p, int tl, int tr, int pos, T val){
         int v = get_next();
         if (tl == tr){
-            tree[v] = min(tree[p], val);
+            tree[v] = combine(tree[p], val);
             return v;
         }
 
@@ -65,10 +65,8 @@ struct PersistentSegmentTree{
     }
 
     inline int update(int pos, T val){
-        int x = root.size();
-        root.push_back(0);
-        root[x] = update(root[x - 1], 0, n - 1, pos, val);
-        return root[x];
+        root = update(root, 0, n - 1, pos, val);
+        return root;
     }
 
     inline T get(int v, int tl, int tr, int l, int r){
