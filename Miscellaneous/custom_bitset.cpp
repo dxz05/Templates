@@ -3,7 +3,7 @@ struct bits{
     unsigned long long *b;
     int cnt; // count of set bits
 
-    void init(int _n){
+    inline void init(int _n){
         n = _n;
         k = (n + 63) / 64;
         cnt = 0;
@@ -15,6 +15,11 @@ struct bits{
     bits(int _n){
         init(_n);
     }
+
+    bits(const bits& from) : n(from.n), k(from.k), cnt(from.cnt){
+        b = (unsigned long long *) calloc(k, sizeof(unsigned long long));
+        memcpy(b, from.b, sizeof(b));
+    };
 
     void set(int i){
         assert(0 <= i && i < n);
