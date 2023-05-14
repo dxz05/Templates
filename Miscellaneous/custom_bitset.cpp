@@ -147,30 +147,52 @@ struct bits{
         return res;
     }
 
-    bits operator>> (const int t){
-        bits res(n);
-        for (int i = t; i < n; i++){
-            if (test(i)) res.set(i - t);
-        }
-        return res;
-    }
-
     bits operator>>= (const int t){
-        *this = *this >> t;
+        if (t >= n){
+            reset();
+        } else {
+            for (int i = t; i < n; i++) {
+                if (test(i)) {
+                    set(i - t);
+                } else {
+                    reset(i - t);
+                }
+            }
+            for (int i = n - t; i < n; i++) {
+                reset(i);
+            }
+        }
         return *this;
     }
 
-    bits operator<< (const int t){
-        bits res(n);
-        for (int i = 0; i + t < n; i++){
-            if (test(i)) res.set(i + t);
-        }
+    bits operator>> (const int t){
+        bits res = *this;
+        res >>= t;
         return res;
     }
 
     bits operator<<= (const int t){
-        *this = *this << t;
+        if (t >= n){
+            reset();
+        } else {
+            for (int i = n - t - 1; i >= 0; i--) {
+                if (test(i)) {
+                    set(i + t);
+                } else {
+                    reset(i + t);
+                }
+            }
+            for (int i = 0; i < t; i++) {
+                reset(i);
+            }
+        }
         return *this;
+    }
+
+    bits operator<< (const int t){
+        bits res = *this;
+        res <<= t;
+        return res;
     }
 
 };
