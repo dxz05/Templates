@@ -3,13 +3,17 @@ struct bits{
     unsigned long long *b;
     int cnt; // count of set bits
 
-    bits(){};
-
-    bits(int _n){
+    void init(int _n){
         n = _n;
         k = (n + 63) / 64;
         cnt = 0;
         b = (unsigned long long *) calloc(k, sizeof(unsigned long long));
+    }
+
+    bits(){};
+
+    bits(int _n){
+        init(_n);
     }
 
     void set(int i){
