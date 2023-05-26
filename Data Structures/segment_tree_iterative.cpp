@@ -34,7 +34,7 @@ struct SegmentTree{
 
     T get(int l, int r) {
         ++r;
-        T res = INT_MAX; // do not forget to change res
+        T res = INT_MIN; // do not forget to change res
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
             if (l & 1) res = combine(res, tree[l++]);
             if (r & 1) res = combine(res, tree[--r]);
