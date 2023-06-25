@@ -1,18 +1,14 @@
-template <typename T>
+template <typename T, T neutral_element, class F = function<T(const T&, const T&)>>
 struct SegmentTree{
     int n = 0;
     vector<T> tree;
-    
-    T neutral_element = numeric_limits<T>().max(); // e.g. 0 for sum, INF for min ...
-    
-    SegmentTree(){};
-    SegmentTree(int _n){
-        n = _n;
-        tree.assign(n * 4 + 5, neutral_element);
-    }
+    F func;
 
-    inline T combine(T lf, T rg){
-        return min(lf, rg); // change it
+    SegmentTree(){};
+    SegmentTree(int _n, const F& f){
+        n = _n;
+        func = f;
+        tree.assign(n * 4 + 5, neutral_element);
     }
 
     inline void build(int v, int tl, int tr, const vector<T> &a){
@@ -23,11 +19,12 @@ struct SegmentTree{
         int tm = (tl + tr) >> 1;
         build(v << 1, tl, tm, a);
         build(v << 1 | 1, tm + 1, tr, a);
-        tree[v] = combine(tree[v << 1], tree[v << 1 | 1]);
+        tree[v] = func(tree[v << 1], tree[v << 1 | 1]);
     }
 
-    inline void init(const vector<T> &a){
+    inline void init(const vector<T> &a, const F& f){
         n = (int)a.size();
+        func = f;
         tree.assign(n * 4 + 5, neutral_element);
         build(1, 0, n - 1, a);
     }
@@ -43,7 +40,7 @@ struct SegmentTree{
         } else {
             update(v << 1 | 1, tm + 1, tr, pos, val);
         }
-        tree[v] = combine(tree[v << 1], tree[v << 1 | 1]);
+        tree[v] = func(tree[v << 1], tree[v << 1 | 1]);
     }
 
     inline void update(int pos, T val){
@@ -54,14 +51,21 @@ struct SegmentTree{
         if (l <= tl && tr <= r) return tree[v];
         if (tl > r || tr < l) return neutral_element;
         int tm = (tl + tr) >> 1;
-        return combine(get(v << 1, tl, tm, l, r), get(v << 1 | 1, tm + 1, tr, l, r));
+        return func(get(v << 1, tl, tm, l, r), get(v << 1 | 1, tm + 1, tr, l, r));
     }
 
     inline T get(int l, int r){
         return get(1, 0, n - 1, l, r);
-    }   
-    
+    }
+
 };
+
+/*
+vector<int> a = {1, 2, 5, 3, 4};
+SegmentTree<int, INT_MIN> st(a, [&](int i, int j){ return max(i, j); });
+
+SegmentTree<int, 0> st(100, [&](int i, int j){ return i + j; });
+*/
 
 /* in case of debugging:
 
